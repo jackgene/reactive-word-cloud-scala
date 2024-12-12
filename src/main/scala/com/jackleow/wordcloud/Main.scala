@@ -151,6 +151,3 @@ def countWords(
       case Failure(e: Throwable) =>
         system.log.error("Failed to bind HTTP endpoint, terminating system", e)
         system.terminate()
-  val numbers: Source[Int, _] =
-    Source.tick(2.seconds, 2.seconds, 1).scan(0)(_ + _)
-  numbers.runForeach(println)
