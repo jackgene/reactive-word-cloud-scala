@@ -14,7 +14,6 @@ import spray.json.*
 
 import java.nio.charset.StandardCharsets
 import scala.concurrent.ExecutionContext
-import scala.concurrent.duration.*
 import scala.util.matching.Regex
 import scala.util.{Failure, Success}
 
@@ -134,13 +133,13 @@ def countWords(
     .bind:
       pathSingleSlash:
         get:
-          parameter("debug".as[Boolean]): (debug: Boolean) =>
+          parameter("debug".as[Boolean].withDefault(false)): (debug: Boolean) =>
             handleWebSocketMessages(
               Flow.fromSinkAndSource(
                 Sink.ignore,
-                if (debug) debuggingWordCounts.map: (counts: DebuggingCounts) =>
+                if (!debug) wordCounts.map: (counts: Counts) =>
                   TextMessage(counts.toJson.compactPrint)
-                else wordCounts.map: (counts: Counts) =>
+                else debuggingWordCounts.map: (counts: DebuggingCounts) =>
                   TextMessage(counts.toJson.compactPrint)
               )
             )
