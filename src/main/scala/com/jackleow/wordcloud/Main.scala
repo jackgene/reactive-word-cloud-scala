@@ -64,7 +64,7 @@ def updateWordsForSender(
 
 def countWords(
   wordsBySender: Map[String, Seq[String]]
-): Map[String, Int] = wordsBySender
+): Map[String, Int] = wordsBySender.toSeq
   .flatMap:
     case (sender: String, words: Seq[String]) =>
       words.map(_ -> sender)
@@ -132,7 +132,7 @@ def countWords(
                     )
                   else extractedWord.copy(word = word.word, isValid = false)
               .drop(1)
-              .reverse
+//              .reverse
             (
               accum.copy(
                 history = accum.history :+ DebuggingCounts.Event(
