@@ -161,14 +161,14 @@ def countWords(
                     Sink.ignore,
                     if !debug then
                       val (actorRef, source) = ActorSource
-                        .actorRef[Counts](PartialFunction.empty, PartialFunction.empty, 1, OverflowStrategy.backpressure)
+                        .actorRef[Counts](PartialFunction.empty, PartialFunction.empty, 1, OverflowStrategy.dropBuffer)
                         .preMaterialize()
                       wordCountsBroadcaster ! BroadcastActor.Command.Subscribe(actorRef)
                       source.map: (counts: Counts) =>
                         TextMessage(counts.toJson.compactPrint)
                     else
                       val (actorRef, source) = ActorSource
-                        .actorRef[DebuggingCounts](PartialFunction.empty, PartialFunction.empty, 1, OverflowStrategy.backpressure)
+                        .actorRef[DebuggingCounts](PartialFunction.empty, PartialFunction.empty, 1, OverflowStrategy.dropBuffer)
                         .preMaterialize()
                       debuggingWordCountsBroadcaster ! BroadcastActor.Command.Subscribe(actorRef)
                       source.map: (counts: DebuggingCounts) =>
