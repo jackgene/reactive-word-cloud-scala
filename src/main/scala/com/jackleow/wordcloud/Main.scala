@@ -121,7 +121,7 @@ def countWords(
               .scanRight(DebuggingCounts.Event.ExtractedWord("", false, oldWordsBySender, Map())):
                 case ((word: SenderAndWord, isValid: Boolean), extractedWord: DebuggingCounts.Event.ExtractedWord) =>
                   if (isValid)
-                    val newWordsBySender: Map[String, Seq[String]] = updateWordsForSender(oldWordsBySender, word)
+                    val newWordsBySender: Map[String, Seq[String]] = updateWordsForSender(extractedWord.wordsBySender, word)
                     val countsByWord: Map[String, Int] = countWords(newWordsBySender)
 
                     extractedWord.copy(
@@ -131,8 +131,7 @@ def countWords(
                       countsByWord = countsByWord
                     )
                   else extractedWord.copy(word = word.word, isValid = false)
-              .drop(1)
-//              .reverse
+              .dropRight(1)
             (
               accum.copy(
                 history = accum.history :+ DebuggingCounts.Event(
