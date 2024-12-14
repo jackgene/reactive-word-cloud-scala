@@ -77,14 +77,14 @@ def countWords(
   val chatMessages: Source[ChatMessage, _] = Consumer
     .plainSource(
       ConsumerSettings(
-        system, new StringDeserializer,
-        (_, data: Array[Byte]) => new String(
-          data, StandardCharsets.UTF_8
-        ).parseJson.convertTo[ChatMessage]
-      ).withBootstrapServers("localhost:9092"),
+        system, new StringDeserializer, new StringDeserializer
+      )
+        .withBootstrapServers("localhost:9092")
+        .withGroupId("word-cloud-app")
+        .withProperty("auto.offset.reset", "earliest"),
       Subscriptions.topics("word-cloud.chat-message")
     )
-    .map(_.value)
+    .map(_.value.parseJson.convertTo[ChatMessage])
     .runWith(BroadcastHub.sink)
   val wordCounts: Source[Counts, _] = chatMessages
     .map(normalizeText)
