@@ -101,8 +101,8 @@ def countWords(
         .runWith(
           ActorSink.actorRef(
             wordCountsBroadcaster,
-            onCompleteMessage = BroadcastActor.Command.Stop(None),
-            onFailureMessage = _ => BroadcastActor.Command.Stop(None)
+            onCompleteMessage = BroadcastActor.Command.Stop(),
+            onFailureMessage = _ => BroadcastActor.Command.Stop()
           )
         )
 
@@ -146,8 +146,8 @@ def countWords(
         .runWith(
           ActorSink.actorRef(
             debuggingWordCountsBroadcaster,
-            onCompleteMessage = BroadcastActor.Command.Stop(None),
-            onFailureMessage = _ => BroadcastActor.Command.Stop(None)
+            onCompleteMessage = BroadcastActor.Command.Stop(),
+            onFailureMessage = _ => BroadcastActor.Command.Stop()
           )
         )
       Http()

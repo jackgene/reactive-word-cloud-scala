@@ -8,7 +8,7 @@ object BroadcastActor:
     case Broadcast(value: T)
     case Subscribe(subscriber: ActorRef[T])
     case Unsubscribe(subscriber: ActorRef[T])
-    case Stop(nothing: Option[T] = None)
+    case Stop() extends Command[T]
 
   private def awaitingValue[T](
     subscribers: Set[ActorRef[T]]
@@ -27,7 +27,7 @@ object BroadcastActor:
         ctx.unwatch(subscriber)
         awaitingValue(subscribers - subscriber)
 
-      case Command.Stop(_) =>
+      case Command.Stop() =>
         Behaviors.stopped
 
   private def running[T](
@@ -48,7 +48,7 @@ object BroadcastActor:
         ctx.unwatch(subscriber)
         running(subscribers - subscriber, value)
 
-      case Command.Stop(_) =>
+      case Command.Stop() =>
         Behaviors.stopped
 
   def apply[T](): Behavior[Command[T]] = awaitingValue[T](Set())
