@@ -81,14 +81,14 @@ def countWords(
         .plainSource(
           ConsumerSettings(
             system, new StringDeserializer, new StringDeserializer
-          )
-            .withBootstrapServers("localhost:9092")
+          ) .withBootstrapServers("localhost:9092")
             .withGroupId("word-cloud-app")
             .withProperty("auto.offset.reset", "earliest"),
           Subscriptions.topics("word-cloud.chat-message")
         )
         .map(_.value.parseJson.convertTo[ChatMessage])
         .runWith(BroadcastHub.sink)
+
       val wordCountsBroadcaster: ActorRef[BroadcastActor.Command[Counts]] =
         ctx.spawn(BroadcastActor[Counts](), "word-count-broadcaster")
       chatMessages
@@ -105,6 +105,7 @@ def countWords(
             onFailureMessage = _ => BroadcastActor.Command.Stop(None)
           )
         )
+
       val debuggingWordCountsBroadcaster: ActorRef[BroadcastActor.Command[DebuggingCounts]] =
         ctx.spawn(BroadcastActor[DebuggingCounts](), "debugging-word-count-broadcaster")
       chatMessages
