@@ -60,7 +60,7 @@ def updateWordsForSender(
       .take(MaxWordsPerSender)
   wordsBySender + (senderAndWord.sender -> newWords)
 
-def countWords(
+def countSendersByWords(
   wordsBySender: Map[String, Seq[String]]
 ): Map[String, Int] = wordsBySender.toSeq
   .flatMap:
@@ -94,7 +94,7 @@ def countWords(
         .flatMapConcat(splitIntoWords)
         .filter(isValidWord)
         .scan(Map())(updateWordsForSender)
-        .map(countWords)
+        .map(countSendersByWords)
         .map(counts => BroadcastActor.Command.Broadcast(Counts(counts)))
         .runWith(
           ActorSink.actorRef(
@@ -121,7 +121,7 @@ def countWords(
                 case ((word: SenderAndWord, isValid: Boolean), extractedWord: DebuggingCounts.Event.ExtractedWord) =>
                   if (isValid)
                     val newWordsBySender: Map[String, Seq[String]] = updateWordsForSender(extractedWord.wordsBySender, word)
-                    val countsByWord: Map[String, Int] = countWords(newWordsBySender)
+                    val countsByWord: Map[String, Int] = countSendersByWords(newWordsBySender)
 
                     extractedWord.copy(
                       word = word.word,
