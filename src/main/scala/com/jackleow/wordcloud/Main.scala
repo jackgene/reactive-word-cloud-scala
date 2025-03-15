@@ -67,7 +67,7 @@ def countSendersByWords(
     case (sender: String, words: Seq[String]) =>
       words.map(_ -> sender)
   .groupMap(_._1)(_._2)
-  .view.mapValues(_.size).toMap
+  .view.mapValues(_.size).toMap()
 
 @main def startServer(): Unit =
   ActorSystem[Nothing](
