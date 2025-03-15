@@ -2,6 +2,7 @@ package com.jackleow.wordcloud
 
 import com.jackleow.wordcloud.support.BroadcastActor
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.pekko.NotUsed
 import org.apache.pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
 import org.apache.pekko.actor.typed.{ActorRef, ActorSystem}
 import org.apache.pekko.http.scaladsl.Http
@@ -11,7 +12,7 @@ import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.kafka.scaladsl.Consumer
 import org.apache.pekko.kafka.{ConsumerSettings, Subscriptions}
 import org.apache.pekko.stream.OverflowStrategy
-import org.apache.pekko.stream.scaladsl.{BroadcastHub, Flow, Sink}
+import org.apache.pekko.stream.scaladsl.{BroadcastHub, Flow, Sink, Source}
 import org.apache.pekko.stream.typed.scaladsl.{ActorSink, ActorSource}
 import spray.json.*
 
@@ -27,9 +28,6 @@ def normalizeText(msg: ChatMessage): SenderAndText =
       .trim
       .toLowerCase
   )
-
-import org.apache.pekko.NotUsed
-import org.apache.pekko.stream.scaladsl.Source
 
 def splitIntoWords(
   senderAndText: SenderAndText
