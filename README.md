@@ -6,24 +6,30 @@
 ```
 
 ## Infrastructure Set Up
+Run Kafka:
+```shell
+export CONTAINER_CMD=docker # or podman
+$CONTAINER_CMD run -d --name=kafka -p 9092:9092 apache/kafka
+```
+
 Create Kafka topic:
 ```shell
-kafka-topics --bootstrap-server=localhost:9092 --create --topic=word-cloud.chat-message --partitions=2
-kafka-configs --bootstrap-server=localhost:9092 --alter --entity-type=topics --entity-name=word-cloud.chat-message --add-config retention.ms=7200000
-kafka-topics --bootstrap-server=localhost:9092 --describe --topic=word-cloud.chat-message
+$CONTAINER_CMD exec -ti kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server=localhost:9092 --create --topic=word-cloud.chat-message --partitions=2
+$CONTAINER_CMD exec -ti kafka /opt/kafka/bin/kafka-configs.sh --bootstrap-server=localhost:9092 --alter --entity-type=topics --entity-name=word-cloud.chat-message --add-config retention.ms=7200000
+$CONTAINER_CMD exec -ti kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server=localhost:9092 --describe --topic=word-cloud.chat-message
 ```
 
 Delete Kafka topic:
 ```shell
-kafka-topics --bootstrap-server=localhost:9092 --delete --topic=word-cloud.chat-message
+$CONTAINER_CMD exec -ti kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server=localhost:9092 --delete --topic=word-cloud.chat-message
 ```
 
 Observe Kafka topic chat message records:
 ```shell
-kafka-console-consumer --bootstrap-server=localhost:9092 --topic=word-cloud.chat-message
+$CONTAINER_CMD exec -ti kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server=localhost:9092 --topic=word-cloud.chat-message
 ```
 
 Publish chat message records to Kafka topic:
 ```shell
-kafka-console-producer --bootstrap-server=localhost:9092 --topic=word-cloud.chat-message
+$CONTAINER_CMD exec -ti kafka /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server=localhost:9092 --topic=word-cloud.chat-message
 ```
