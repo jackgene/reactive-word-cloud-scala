@@ -2,7 +2,6 @@ package com.jackleow.wordcloud
 
 import com.jackleow.wordcloud.support.BroadcastActor
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.apache.pekko.NotUsed
 import org.apache.pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
 import org.apache.pekko.actor.typed.{ActorRef, ActorSystem}
 import org.apache.pekko.http.scaladsl.Http
@@ -31,7 +30,7 @@ def normalizeText(msg: ChatMessage): SenderAndText =
 
 def splitIntoWords(
   senderAndText: SenderAndText
-): Source[SenderAndWord, NotUsed] = Source(
+): Source[SenderAndWord, _] = Source(
   senderAndText.text
     .split(" ")
     .map(SenderAndWord(senderAndText.sender, _))
