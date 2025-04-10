@@ -25,8 +25,8 @@ def normalizeText(msg: ChatMessage): SenderAndText =
   SenderAndText(
     msg.sender,
     NonLetterPattern.replaceAllIn(msg.text, " ")
-      .trim
-      .toLowerCase
+      .trim()
+      .toLowerCase()
   )
 
 def splitIntoWords(
@@ -62,12 +62,11 @@ def updateWordsForSender(
 
 def countSendersByWords(
   wordsBySender: Map[String, Seq[String]]
-): Map[String, Int] = wordsBySender.toSeq
-  .flatMap:
-    case (sender: String, words: Seq[String]) =>
-      words.map(_ -> sender)
-  .groupMap(_._1)(_._2)
-  .view.mapValues(_.size).toMap()
+): Map[String, Int] = wordsBySender.values
+  .flatten()
+//  .groupMapReduce(identity)(_ => 1)(_ + _)
+  .groupBy(identity).view
+  .mapValues(_.size).toMap
 
 @main def startServer(): Unit =
   ActorSystem[Nothing](
