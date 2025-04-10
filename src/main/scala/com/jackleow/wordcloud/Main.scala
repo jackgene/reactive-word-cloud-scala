@@ -16,6 +16,7 @@ import org.apache.pekko.stream.typed.scaladsl.{ActorSink, ActorSource}
 import spray.json.*
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.DurationInt
 import scala.util.matching.Regex
 import scala.util.{Failure, Success}
 
@@ -161,15 +162,21 @@ def countSendersByWords(
                         .actorRef[Counts](PartialFunction.empty, PartialFunction.empty, 1, OverflowStrategy.dropBuffer)
                         .preMaterialize()
                       wordCountsBroadcaster ! BroadcastActor.Command.Subscribe(actorRef)
-                      source.map: (counts: Counts) =>
-                        TextMessage(counts.toJson.compactPrint)
+                      source
+                        .buffer(1, OverflowStrategy.dropHead)
+                        .throttle(1, 100.millis)
+                        .map: (counts: Counts) =>
+                          TextMessage(counts.toJson.compactPrint)
                     else
                       val (actorRef, source) = ActorSource
                         .actorRef[DebuggingCounts](PartialFunction.empty, PartialFunction.empty, 1, OverflowStrategy.dropBuffer)
                         .preMaterialize()
                       debuggingWordCountsBroadcaster ! BroadcastActor.Command.Subscribe(actorRef)
-                      source.map: (counts: DebuggingCounts) =>
-                        TextMessage(counts.toJson.compactPrint)
+                      source
+                        .buffer(1, OverflowStrategy.dropHead)
+                        .throttle(1, 100.millis)
+                        .map: (counts: DebuggingCounts) =>
+                          TextMessage(counts.toJson.compactPrint)
                   )
                 )
         .onComplete:
